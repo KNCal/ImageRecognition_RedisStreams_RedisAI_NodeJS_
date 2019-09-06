@@ -1,0 +1,19 @@
+{
+  "name": "image_recognition_redis_stream_redisai-nodejs",
+  "version": "1.0.0",
+  "description": "Image Recognition with Redis Streams and RedisAI in NodeJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kim Nguyen",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^2.6.1",
+    "fs": "0.0.1-security",
+    "ioredis": "^4.14.0",
+    "jimp": "^0.6.8",
+    "redis": "^2.8.0",
+    "twitter-lite": "^0.9.4"
+  }
+}

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <meta http-equiv=“Pragma” content=”no-cache”>
+    <meta http-equiv=“expires” content="0">
+    <meta http-equiv=“CACHE-CONTROL” content=”NO-CACHE”>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <meta name="twitter:widgets:link-color" content="#cc0000">
+    <meta name="twitter:widgets:theme" content="light">
+    <link href="css/common.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+    <div class="container">
+      <div class="page-header"><h2>Streaming tweets with Node.js + Redis Streams</h2></div>
+    </div>
+  </head>
+  <body>
+    <div class="container">
+      <form class="form">
+          <div class="input-group">
+              <input type="text" class="form-control search-txt" placeholder="Search for a hashtag on Twitter..." value="#trump" />
+              <span class="input-group-btn">
+                  <button type="button" class="btn btn-success btn-search">Start streaming</button>
+              </span>
+          </div>
+      </form>   
+
+      <div id="output"></div>
+      <!-- <script> -->
+      <script src="js/jquery.min.js"></script>
+      <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
+      <script language="javascript" type="text/javascript">
+
+        var form = document.querySelector('.form');
+        var output;
+
+        function init() {
+          output = document.getElementById("output");
+          testWebSocket();
+        }
+
+        function testWebSocket() {
+          websocket = new WebSocket('ws://localhost:4000');
+          websocket.onopen = function(evt) { onOpen(evt) };
+          websocket.onclose = function(evt) { onClose(evt) };
+          websocket.onmessage = function(evt) { onMessage(evt) };
+          websocket.onerror = function(evt) { onError(evt) };
+        }
+
+        function onOpen(evt){
+          doSend("CONNECTED");
+        }
+
+        function onClose(evt) {
+          writeToScreen("DISCONNECTED");
+        }
+
+        function onMessage(evt) {
+          displayTweet(evt.data);
+        }
+
+        function onError(evt) {
+          writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+        }
+
+        function doSend(message) {
+          websocket.send(message);
+        }
+
+        function writeToScreen(message) {
+          var pre = document.createElement("p");
+          if(typeof pre !=="undefined") {
+            pre.style.wordWrap = "break-word";
+            pre.innerHTML = message;
+            output.appendChild(pre);
+          }  
+        }
+
+        function displayTweet(message) {
+
+          var obj = JSON.parse(message);
+          var id = obj.id;
+
+          if (typeof id !== 'undefined' || id != null) {
+            var d_el = document.createElement("div");     // twitter 
+            var dd_el = document.createElement("div");    // dropdown (button + menu)
+            var dd1_el = document.createElement("div");
+            var dcon_el = document.createElement("div");  // div holding twitter widget + button dropdown menu
+
+            var b_el = document.createElement("button");  // dropdown button
+            var u_el = document.createElement("ul");      // dropdown menu
+            var li_aa_el = document.createElement("li");
+            var li_ad_el = document.createElement("li");
+            var ad_el = document.createElement("a");      // menu item - delete
+            var aa_el = document.createElement("a");      // menu item - select
+
+            $(aa_el).attr({
+              "href"   : "#"
+            });
+            aa_el.innerHTML = "Add";
+
+            $(ad_el).attr({
+              "href"  : "#"
+            });
+            ad_el.innerHTML = "Delete";
+
+            $(b_el).attr({
+              "class"         : "btn dropdown-toggle",
+              "type"          : "button",
+              "id"            : "dropdownMenuButton",
+              "data-toggle"   : "dropdown",
+              "margin-top": "10px"
+            });
+
+            $(u_el).attr({
+              "id"    : "dropdown-list",
+              "class" : "dropdown-menu",
+              "aria-labelledby" : "dropdownMenuButton"
+            });
+
+            $(dd1_el).attr({
+              "class" : "dropdown"
+            });
+
+            $(dd_el).attr({
+              "padding-top": "10px"
+            });
+
+            $(dcon_el).attr({
+              "class": "d-flex justify-content-center flex-row-reverse bg-secondary"
+            })
+
+            $(d_el).attr({
+              "id": "tweet",
+              "tweetID": id
+            });
+          
+
+          li_aa_el.appendChild(aa_el);
+          li_ad_el.appendChild(ad_el);          
+          u_el.appendChild(li_aa_el);
+          u_el.appendChild(li_ad_el);
+          dd_el.appendChild(b_el);
+          dd_el.appendChild(u_el);
+          dd1_el.appendChild(dd_el);
+
+          window.twttr.widgets.createTweet(
+            id, d_el,
+            {
+              conversation  : 'none',
+              cards         : 'hidden'
+            })
+            .then (function (el) {
+              dcon_el.appendChild(dd1_el);
+              dcon_el.appendChild(d_el);
+              output.appendChild(dcon_el);
+            }
+          );
+        }
+      }
+        window.addEventListener("load", init, false);
+
+        $('#dropdown-list').on('click', function(){
+          $('#dropdownMenuButton').val($(this).text());
+        });
+
+
+      </script>  
+      <script> src="client.js"</script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+      <script src="js/bootstrap.min.js"></script>
+      <div id="root"></div>
+    </div>    
+  </body>
+</html>
+
+
+
+
+
+
+
