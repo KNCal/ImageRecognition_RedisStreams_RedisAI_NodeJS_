@@ -13,7 +13,7 @@
     "fs": "0.0.1-security",
     "ioredis": "^4.14.0",
     "jimp": "^0.6.8",
-    "redis": "^2.8.0",
+    "redis": "^3.1.1",
     "twitter-lite": "^0.9.4"
   }
 }
